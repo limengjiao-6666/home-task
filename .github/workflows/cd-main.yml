@@ -1,0 +1,29 @@
+# .github/workflows/cd-main.yml
+name: CD for Main Branch
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Tencent ECS
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.TENCENT_SSH_KEY }}
+          SERVER_IP: ${{ secrets.TENCENT_ECS_IP }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+          
+          ssh ec2-user@$SERVER_IP << 'EOF'
+          cd /opt/bank-transaction-service
+          git pull origin main
+          docker build -t bank-transaction-service .
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          EOF

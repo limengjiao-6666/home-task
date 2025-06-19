@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  cache:
+    type: caffeine
+  application:
+    name: bank-transaction-service
+
+logging:
+  level:
+    root: INFO
+    com.bank.transaction: DEBUG
