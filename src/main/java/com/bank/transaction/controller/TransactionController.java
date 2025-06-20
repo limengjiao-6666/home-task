@@ -26,6 +26,7 @@ public class TransactionController {
 
     /**
      * 创建交易记录
+     *
      * @param dto 交易数据传输对象（包含账户ID、金额、类型等）
      * @return HTTP 201响应体包含新创建的交易记录
      */
@@ -37,6 +38,7 @@ public class TransactionController {
 
     /**
      * 查询单个交易记录
+     *
      * @param id 交易记录唯一标识符
      * @return HTTP 200响应体包含交易记录详情（若存在）
      * @throws BusinessException 当交易记录不存在时返回404状态码
@@ -49,6 +51,7 @@ public class TransactionController {
 
     /**
      * 分页查询交易记录
+     *
      * @param page 页码（从0开始）
      * @param size 每页记录数（最大100）
      * @return HTTP 200响应体包含分页数据（记录列表、总数等）
@@ -63,7 +66,8 @@ public class TransactionController {
 
     /**
      * 更新交易记录
-     * @param id 待更新交易记录ID
+     *
+     * @param id  待更新交易记录ID
      * @param dto 更新后的交易数据
      * @return HTTP 200响应体包含更新后的完整记录
      * @throws BusinessException 当记录不存在时返回404，重复数据时返回409
@@ -78,6 +82,7 @@ public class TransactionController {
 
     /**
      * 删除交易记录
+     *
      * @param id 待删除记录ID
      * @return HTTP 204无内容响应（成功时）
      * @throws BusinessException 当记录不存在时返回404

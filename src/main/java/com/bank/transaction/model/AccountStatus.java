@@ -6,4 +6,5 @@ public record AccountStatus(
         String accountId,
         boolean isBlacklisted,
         LocalDateTime blacklistUntil
-) {}
+) {
+}

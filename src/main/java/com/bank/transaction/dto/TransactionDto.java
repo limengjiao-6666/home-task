@@ -7,6 +7,7 @@ public record TransactionDto(
         double amount,
         Transaction.TransactionType type,
         String description
-) {}
+) {
+}
 
 
