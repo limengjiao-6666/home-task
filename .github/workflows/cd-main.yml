@@ -1,4 +1,5 @@
-# .github/workflows/cd-main.yml
+# 执行docker build制作好最新版本镜像后，部署到腾讯云ECS搭建的minikube环境。
+# 暂未实现：网络原因，没有找到合适的用来存储docker 镜像的仓库。
 name: CD for Main Branch
 
 on:
@@ -14,16 +15,5 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.TENCENT_SSH_KEY }}
           SERVER_IP: ${{ secrets.TENCENT_ECS_IP }}
         run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          
-          ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
-          
-          ssh ec2-user@$SERVER_IP << 'EOF'
-          cd /opt/bank-transaction-service
-          git pull origin main
-          docker build -t bank-transaction-service .
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
+          echo "暂未实现"
           EOF
