@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
                 ex.getErrorCode().getMessage()
         );
 
-        if(ex.getErrorCode().equals(ErrorCode.TRANSACTION_NOT_FOUND)) {
+        if (ex.getErrorCode().equals(ErrorCode.TRANSACTION_NOT_FOUND)) {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
@@ -38,5 +38,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    public record ErrorResponse(String code, String message) {}
+    public record ErrorResponse(String code, String message) {
+    }
 }

@@ -1,17 +1,20 @@
-# .github/workflows/ci-dev.yml
+# 修改推送到dev分之后，执行代码风格检查、单元测试。
+# 创建了到main分之的PR后，执行压力测试。
 name: CI for Dev Branch
 
 on:
   push:
-    branches: [dev]
+    branches: [ dev ]  # dev 分支推送时触发
   pull_request:
-    branches: [dev]
+    branches: [ main ]  # dev → main 的 PR 时触发
 
 jobs:
-  build-and-test:
+  lint-and-test:
+    name: Code Style & Unit Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v3
@@ -19,12 +22,53 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cache Maven packages
+      - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('​**​/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2-
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Run code style check (Checkstyle)
+        run: mvn checkstyle:check -Dcheckstyle.failOnViolation=false # 只做展示，不阻断构建
 
       - name: Build and Test
         run: mvn verify
+
+  stress-test:
+    name: k6 Stress Test (PR Only)
+    if: github.event_name == 'pull_request'  # 仅在 PR 时运行
+    needs: lint-and-test  # 依赖 lint-and-test 任务
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: sudo apt-get update && sudo apt-get install k6
+
+      - name: Build application
+        run: mvn clean package -DskipTests
+
+      - name: Start application in background
+        run: |
+          nohup java -jar target/bank-transaction-service-1.0.0.jar > app.log 2>&1 &
+          echo $! > pid.file
+          sleep 10  # 等待应用启动
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080/actuator/health
+
+      - name: Run k6 stress test
+        run: |
+          k6 run --out json=load-test-results.json ./script/stress-test/stress-test.js
+
+      - name: Stop application
+        if: always()  # 无论测试成功与否都执行
+        run: |
+          kill $(cat pid.file) || true
+
+      - name: Check test results
+        run: |
+          # 检查测试是否通过基本阈值         
+          if grep -q '"failed": true' load-test-results.json; then
+            echo "Load test failed!"
+            exit 1
+          fi
