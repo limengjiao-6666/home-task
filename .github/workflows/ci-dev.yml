@@ -56,10 +56,6 @@ jobs:
           sleep 10  # 等待应用启动
           curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:8080/actuator/health
 
-
-      - name: Run k6 stress test
-        run: k6 run ./script/stress-test/stress-test.js
-
       - name: Run k6 stress test
         run: |
           k6 run --out json=load-test-results.json ./script/stress-test/stress-test.js
