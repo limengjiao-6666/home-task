@@ -60,15 +60,6 @@ jobs:
         run: |
           k6 run --out json=load-test-results.json ./script/stress-test/stress-test.js
 
-      - name: Upload test reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: k6-test-reports
-          path: |
-            load-test-report.html
-            load-test-results.json
-          retention-days: 7
-
       - name: Stop application
         if: always()  # 无论测试成功与否都执行
         run: |

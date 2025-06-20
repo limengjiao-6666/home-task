@@ -35,6 +35,7 @@ mvn spring-boot:run
     * 单元测试：mvn test
     * code style检查：mvn checkstyle:check
     * 压力测试：k6 run ./script/stress-test/stress-test.js  (需要先安装k6)
+![压测结果](doc/imgs/stress-test-res.png)
 
 ### 📡 API文档
     * 简要情况如下，详细请查阅swagger文档
