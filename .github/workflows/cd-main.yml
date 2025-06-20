@@ -16,4 +16,3 @@ jobs:
           SERVER_IP: ${{ secrets.TENCENT_ECS_IP }}
         run: |
           echo "暂未实现"
-          EOF
